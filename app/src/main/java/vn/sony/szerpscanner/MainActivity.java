@@ -60,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
         ws.setSupportZoom(true);
         ws.setBuiltInZoomControls(true);
         ws.setDisplayZoomControls(false);
+        // SZERP là hệ thống cũ, server có kiểm tra User-Agent và chỉ nhận
+        // trình duyệt kiểu Chrome 36-39 (như PC công ty đang dùng). WebView
+        // mặc định gửi User-Agent hiện đại nên bị server từ chối, trả về
+        // trang lỗi "系统异常". Giả User-Agent cũ để server nhận diện đúng.
+        ws.setUserAgentString(
+                "Mozilla/5.0 (Linux; Android 4.4.2; SM-HONEYWELL) "
+                        + "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        + "Chrome/36.0.1985.135 Mobile Safari/537.36");
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -101,7 +109,10 @@ public class MainActivity extends AppCompatActivity {
     private void loadLoginPage() {
         int idx = spinnerServer.getSelectedItemPosition();
         String ip = SERVER_IPS[Math.max(idx, 0)];
-        String url = "http://" + ip + ":8080/szerp/login.htm";
+        // Vào thẳng gốc szerp/, server sẽ tự chuyển đến trang đăng nhập
+        // (KHÔNG dùng login.htm/login.shtml - đó chỉ là tên file lúc Save As,
+        // không phải đường dẫn thật trên server).
+        String url = "http://" + ip + ":8080/szerp/";
         webView.loadUrl(url);
     }
 
