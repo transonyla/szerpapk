@@ -35,8 +35,20 @@
     } catch (e) {}
   }
 
+  var DETAIL_CSS =
+    "div.lst_area, div.lst_area1 {" +
+    "  overflow-x: auto !important;" +
+    "  -webkit-overflow-scrolling: touch !important;" +
+    "}" +
+    "#jsontb { width: auto !important; min-width: 100%; }" +
+    "#jsontb td, #jsontb th { font-size: 13px !important; }";
+
   var patchedListFrameEl = null;
 
+  // Nhận diện khung KHÔNG dựa vào nút bấm bên trong (dễ trùng lặp giữa các
+  // khung), mà dựa thẳng vào id của chính thẻ <iframe>/<frame> - đây là tên
+  // cố định do ERP tự đặt: "rightcontent" (danh sách pallet), "bottomcontent"
+  // (bảng chi tiết), "leftcontent" (form chọn nhân viên - KHÔNG đụng vào).
   function tryApply() {
     var all = [];
     try {
@@ -44,19 +56,36 @@
     } catch (e) {}
     for (var i = 0; i < all.length; i++) {
       var w = all[i].win;
+      var frameEl = all[i].frameEl;
+      if (!frameEl) continue; // bỏ qua chính top window
+      var fid = frameEl.id || frameEl.getAttribute("id") || "";
+      if (fid !== "rightcontent" && fid !== "bottomcontent") continue;
       try {
-        if (!w || w.__szerpListPatched) continue;
+        if (!w) continue;
         var doc = w.document;
-        if (!doc || !doc.location) continue;
-        var loc = String(doc.location.href || "");
-        if (loc.indexOf("newclothoutlib") === -1) continue;
+        if (!doc) continue;
         var tbl = doc.getElementById("jsontb");
         if (!tbl) continue;
-        patchListFrame(w, doc);
-        w.__szerpListPatched = true;
-        patchedListFrameEl = all[i].frameEl;
+
+        if (fid === "rightcontent" && !w.__szerpListPatched) {
+          patchListFrame(w, doc);
+          w.__szerpListPatched = true;
+          patchedListFrameEl = frameEl;
+        } else if (fid === "bottomcontent" && !w.__szerpDetailPatched) {
+          patchDetailFrame(w, doc);
+          w.__szerpDetailPatched = true;
+        }
       } catch (e) {}
     }
+  }
+
+  // Khung bảng chi tiết (bottomcontent): giữ nguyên y hệt bảng gốc của ERP
+  // (đủ cột, không ẩn/rút gọn gì), chỉ bật cuộn ngang (vuốt ngang xem hết
+  // chiều dài bảng) - cuộn dọc ERP đã có sẵn overflow-y:auto.
+  function patchDetailFrame(w, doc) {
+    var style = doc.createElement("style");
+    style.textContent = DETAIL_CSS;
+    doc.head.appendChild(style);
   }
 
   function patchListFrame(w, doc) {
