@@ -7,7 +7,7 @@
     <application
         android:allowBackup="true"
         android:label="Xuat Kho"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@android:drawable/sym_def_app_icon"
         android:theme="@android:style/Theme.NoTitleBar">
 
         <activity
