@@ -1,6 +1,7 @@
 package com.sonycab.scannerapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
@@ -35,6 +36,40 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
+
+        webView.loadUrl(APP_URL);
+    }
+
+    // Nut Back tren may scan: quay lai trang truoc trong WebView thay vi thoat app
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    // Khi khong con trang nao de goBack() trong WebView nua:
+    // thay vi thoat app, chuyen sang che do chay ngam (FloatingService) + dua app xuong nen
+    @Override
+    public void onBackPressed() {
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+            return;
+        }
+        startService(new Intent(this, FloatingService.class));
+        moveTaskToBack(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            webView.destroy();
+        }
+        super.onDestroy();
+    }
+}        webView.setWebChromeClient(new WebChromeClient());
 
         webView.loadUrl(APP_URL);
     }
