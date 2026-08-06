@@ -50,8 +50,6 @@ public class MainActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    // Khi khong con trang nao de goBack() trong WebView nua:
-    // thay vi thoat app, chuyen sang che do chay ngam (FloatingService) + dua app xuong nen
     @Override
     public void onBackPressed() {
         if (webView != null && webView.canGoBack()) {
@@ -60,6 +58,14 @@ public class MainActivity extends Activity {
         }
         startService(new Intent(this, FloatingService.class));
         moveTaskToBack(true);
+    }
+
+    // Bam nut Home (giua): he thong tu dua app xuong nen,
+    // truoc khi an, khoi dong FloatingService de hien nut noi
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        startService(new Intent(this, FloatingService.class));
     }
 
     @Override
