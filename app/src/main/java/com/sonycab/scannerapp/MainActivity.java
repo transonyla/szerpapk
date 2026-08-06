@@ -69,26 +69,4 @@ public class MainActivity extends Activity {
         }
         super.onDestroy();
     }
-}        webView.setWebChromeClient(new WebChromeClient());
-
-        webView.loadUrl(APP_URL);
-    }
-
-    // Nut Back tren may scan: quay lai trang truoc trong WebView thay vi thoat app
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
-            webView.goBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (webView != null) {
-            webView.destroy();
-        }
-        super.onDestroy();
-    }
 }
