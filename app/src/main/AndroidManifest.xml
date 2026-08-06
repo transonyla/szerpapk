@@ -10,6 +10,7 @@
         android:label="Xuat Kho"
         android:icon="@android:drawable/sym_def_app_icon"
         android:theme="@android:style/Theme.NoTitleBar">
+        <service android:name=".FloatingService" android:enabled="true" android:exported="false" />
 
         <activity
             android:name=".MainActivity"
